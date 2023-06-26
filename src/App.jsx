@@ -4,8 +4,8 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import PianoRoll from "./components/PianoRoll.jsx";
-import Channel from "./components/Channel.jsx";
-
+import Instrument from "./components/Instrument.jsx";
+import PlayList from "./components/PlayList.jsx";
 function App() {
 	return (
 		<Box
@@ -18,7 +18,7 @@ function App() {
 				background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
 			}}
 		>
-			<Channel type="PluckSynth" width="1500px" />
+			<PlayList />
 		</Box>
 	);
 }

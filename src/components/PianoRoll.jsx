@@ -5,14 +5,31 @@ import {
 	Button,
 	Slider,
 	FormControl,
-	Input,
+	InputLabel,
+	Select,
+	MenuItem,
+	Dialog,
+	DialogContent,
 } from "@mui/material";
 import { useState, useEffect } from "react";
+import AddBoxIcon from "@mui/icons-material/AddBox";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PianoIcon from "@mui/icons-material/Piano";
+
 const PianoRoll = ({ sendData }) => {
 	const [patterns, setPatterns] = useState([]);
 	const [pianoRoll, setPianoRoll] = useState([]);
 	const [dimensions, setDimensions] = useState(27);
 	const [sliderVal, setSliderVal] = useState(9);
+	const [open, setOpen] = useState(false);
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+		handleSendActiveUnits();
+	};
 
 	const noteData = [
 		{
@@ -72,7 +89,7 @@ const PianoRoll = ({ sendData }) => {
 			for (let x of noteData) {
 				let toString = `${noteData[x]}` + i;
 				let rollObject = {
-					note: x.note + i,
+					note: x.note + (8 - i),
 					activeUnits: Array.from({ length: 128 }, () => ({
 						isActive: false,
 					})),
@@ -154,19 +171,17 @@ const PianoRoll = ({ sendData }) => {
 	};
 
 	const handleSendActiveUnits = () => {
-		pianoRoll.forEach((item, index) => {
-			const trueIndices = item.activeUnits.reduce(
-				(indices, unit, unitIndex) => {
-					if (unit.isActive) {
-						indices.push(unitIndex);
-					}
-					return indices;
-				},
-				[]
-			);
-
-			sendData(item.note, trueIndices);
-		});
+		let tempArr = [];
+		for (let item of pianoRoll) {
+			for (let unit of item.activeUnits) {
+				if (unit.isActive === true) {
+					let index = item.activeUnits.indexOf(unit);
+					console.log(item.note, index);
+					let xp = tempArr.find((x) => x.note === item.note);
+					sendData(item.note, item.activeUnits[index]);
+				}
+			}
+		}
 	};
 	const handleDrag = (e) => {
 		e.preventDefault();
@@ -184,104 +199,127 @@ const PianoRoll = ({ sendData }) => {
 				color: "#c8fedc", // Change the color to your desired color
 			}}
 		>
-			{pianoRoll.map((item, index) => {
-				return (
-					<Box
-						key={index}
-						display="flex"
-						flexDirection="row"
-						width="100%"
-						onDrag={handleDrag}
-						onClick={handleDrag}
-						onMouseDown={handleDrag}
-						onMouseUp={handleDrag}
-						sx={{
-							background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
-							color: "#c8fedc", // Change the color to your desired color
-						}}
-					>
-						<Box width="20px" marginRight="15px" marginLeft="15px">
-							<Typography
-								onDrag={handleDrag}
-								onClick={handleDrag}
-								onMouseDown={handleDrag}
-								onMouseUp={handleDrag}
-								width="20px"
-								height="10px"
-								color="#4ADEDE"
-								sx={{
-									userSelect: "none",
-								}}
-							>
-								{item.note}
-							</Typography>
-						</Box>
-						{item.activeUnits.map((unit, indexOfUnit) => {
-							let isActive = unit.isActive;
-							let uniqueId = (item.note + indexOfUnit).toString();
-							return (
-								<Box
-									width="80%"
-									key={indexOfUnit}
-									onDrag={handleDrag}
-									onClick={handleDrag}
-									onMouseDown={handleDrag}
-									onMouseUp={handleDrag}
-								>
-									{" "}
-									<Box
-										s
-										width={`${dimensions}px`}
-										height={`${dimensions}px`}
-										border="1px solid gray"
-										backgroundColor="white"
-										id={uniqueId}
-										onMouseOver={(e) =>
-											changeUnitStateMouseOver(e, item.note, indexOfUnit)
-										}
-										onClick={(e) =>
-											changeUnitStateElse(e, item.note, indexOfUnit)
-										}
-										onContextMenu={(e) =>
-											changeUnitStateElse(e, item.note, indexOfUnit)
-										}
-									></Box>
-								</Box>
-							);
-						})}
-					</Box>
-				);
-			})}
-			<Box
-				width="100%"
-				flexDirection="column"
-				display="flex"
-				justifyContent="center"
+			<Button
+				onClick={handleOpen}
 				sx={{
 					background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
 					color: "#c8fedc", // Change the color to your desired color
 				}}
 			>
-				<Slider
-					onChange={(event, value) => changeDim(value)}
-					min={27}
-					max={90}
-					value={dimensions}
-					sx={{
-						background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
-						color: "#c8fedc", // Change the color to your desired color
-					}}
-				/>
-				<Button
-					sx={{
-						background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
-						color: "#c8fedc", // Change the color to your desired color
-					}}
-					onClick={handleSendActiveUnits}
-				>
-					Send
-				</Button>
-			</Box>
+				<PianoIcon />
+			</Button>
+			<Dialog open={open} close={!open} maxWidth="lrg">
+				<DialogContent dividers>
+					<Box
+						width="100%"
+						flexDirection="column-reverse"
+						display="flex"
+						justifyContent="center"
+						sx={{
+							background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
+							color: "#c8fedc", // Change the color to your desired color
+						}}
+					>
+						<Box
+							display="flex"
+							justifyContent="left"
+							padding="3px"
+							marginBottom="12px"
+						>
+							<Button
+								onClick={handleClose}
+								sx={{
+									background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
+									color: "#c8fedc", // Change the color to your desired color
+								}}
+							>
+								<ArrowBackIcon />
+							</Button>
+						</Box>
+
+						<Slider
+							onChange={(event, value) => changeDim(value)}
+							min={27}
+							max={90}
+							value={dimensions}
+							sx={{
+								background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
+								color: "#c8fedc", // Change the color to your desired color
+							}}
+						/>
+					</Box>
+					{pianoRoll.map((item, index) => {
+						return (
+							<Box flexDirection="column" key={index}>
+								<Box
+									key={index}
+									display="flex"
+									flexDirection="row"
+									width="100%"
+									onDrag={handleDrag}
+									onClick={handleDrag}
+									onMouseDown={handleDrag}
+									onMouseUp={handleDrag}
+									sx={{
+										background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
+										color: "#c8fedc", // Change the color to your desired color
+									}}
+								>
+									<Box width="20px" marginRight="15px" marginLeft="15px">
+										<Typography
+											onDrag={handleDrag}
+											onClick={handleDrag}
+											onMouseDown={handleDrag}
+											onMouseUp={handleDrag}
+											width="20px"
+											height="10px"
+											color="#4ADEDE"
+											sx={{
+												userSelect: "none",
+											}}
+										>
+											{item.note}
+										</Typography>
+									</Box>
+									{item.activeUnits.map((unit, indexOfUnit) => {
+										let isActive = unit.isActive;
+										let uniqueId = (item.note + indexOfUnit).toString();
+										return (
+											<Box
+												width="80%"
+												key={indexOfUnit}
+												onDrag={handleDrag}
+												onClick={handleDrag}
+												onMouseDown={handleDrag}
+												onMouseUp={handleDrag}
+											>
+												{" "}
+												<Box
+													s
+													width={`${dimensions}px`}
+													height={`${dimensions}px`}
+													border="1px solid gray"
+													backgroundColor="white"
+													id={uniqueId}
+													onMouseOver={(e) =>
+														changeUnitStateMouseOver(e, item.note, indexOfUnit)
+													}
+													onClick={(e) =>
+														changeUnitStateElse(e, item.note, indexOfUnit)
+													}
+													onContextMenu={(e) =>
+														changeUnitStateElse(e, item.note, indexOfUnit)
+													}
+												></Box>
+											</Box>
+										);
+									})}
+								</Box>
+							</Box>
+						);
+					})}
+				</DialogContent>
+			</Dialog>
 		</Box>
 	);
 };
