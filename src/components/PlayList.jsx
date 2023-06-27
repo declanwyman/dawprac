@@ -41,15 +41,8 @@ const PlayList = () => {
 		setOpen(false);
 	};
 
-	const handleUpdateChannels = (chanName, newInstruments) => {
-		const tempChan = channels;
-		for (let x of tempChan) {
-			if (x.name === chanName) {
-				x.instruments = newInstruments;
-			}
-		}
-		setChannels(tempChan);
-		console.log(tempChan);
+	const handleUpdateChannels = (data) => {
+		console.log(data);
 	};
 
 	return (

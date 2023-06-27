@@ -177,12 +177,38 @@ const PianoRoll = ({ sendData }) => {
 				if (unit.isActive === true) {
 					let index = item.activeUnits.indexOf(unit);
 					console.log(item.note, index);
-					let xp = tempArr.find((x) => x.note === item.note);
-					sendData(item.note, item.activeUnits[index]);
+					let isFound = tempArr.findIndex((x) => x.note === item.note);
+					if (isFound !== -1) {
+						tempArr[isFound].units.push(index);
+					} else {
+						tempArr.push({ note: item.note, units: [index], organized: [] });
+					}
 				}
 			}
+			let orgArr = [];
 		}
+		for (let x of tempArr) {
+			x.organized.push(getConsecutiveArrays(x.units));
+		}
+		sendData(tempArr);
 	};
+
+	function getConsecutiveArrays(arr) {
+		const result = [];
+		let currentGroup = [arr[0]];
+
+		for (let i = 1; i < arr.length; i++) {
+			if (arr[i] === arr[i - 1] + 1) {
+				currentGroup.push(arr[i]);
+			} else {
+				result.push(currentGroup);
+				currentGroup = [arr[i]];
+			}
+		}
+
+		result.push(currentGroup);
+		return result;
+	}
 	const handleDrag = (e) => {
 		e.preventDefault();
 	};

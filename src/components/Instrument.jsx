@@ -17,7 +17,7 @@ import * as Tone from "tone";
 import PianoRoll from "./PianoRoll.jsx";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 const Instrument = ({ type, updateChannel }) => {
-	const instrumentType = type;
+	const instType = type;
 	Tone.Transport.bpm.value = 120; // Set the BPM to 120
 	const synth = new Tone.PolySynth().toDestination();
 	const [instrument, setInstrument] = useState(type);
@@ -26,26 +26,11 @@ const Instrument = ({ type, updateChannel }) => {
 
 	const testFinal = [];
 
-	const collectPatterns = (note, indices) => {
-		let consecutiveIndices = [];
-		for (let i = 0; i < indices.length; i++) {
-			if (i < indices.length - 1 && indices[i] + 1 === indices[i + 1]) {
-				consecutiveIndices.push(indices[i]);
-			} else {
-				consecutiveIndices.push(indices[i]);
-
-				testFinal.push({ note, timeStamps: [consecutiveIndices] });
-				consecutiveIndices = [];
-			}
-		}
-		if (consecutiveIndices.length > 0) {
-			console.log(consecutiveIndices);
-		}
-		setPatterns(testFinal);
-		updateChannel(instrumentType, testFinal);
-		console.log(testFinal);
+	const collectPatterns = (data) => {
+		console.log("data", data);
+		setPatterns(data);
+		updateChannel({ instrument: instType, data });
 	};
-	console.log(patterns);
 
 	const handleSchedule = () => {
 		Tone.Transport.cancel();

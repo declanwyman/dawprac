@@ -35,17 +35,9 @@ const Channel = ({ channelName, updatePlaylist }) => {
 		setSelectedValue("");
 	};
 
-	const handleUpdateInstrumentRollData = (type, data) => {
-		const tempInst = instruments;
-		for (let x of tempInst) {
-			if (x.instrument === type) {
-				x.pianoRollData = data;
-				return;
-			}
-		}
-		setInstruments(tempInst);
-		updatePlaylist(chanskiName, tempInst);
-		console.log(tempInst);
+	const handleUpdateInstrumentRollData = (data) => {
+		console.log(data);
+		updatePlaylist({ channel: chanskiName, data });
 	};
 
 	return (
