@@ -26,7 +26,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 const Channel = ({ channelName, updatePlaylist, channelIndex }) => {
 	const channels = useSelector((state) => state.channels);
 	const dispatch = useDispatch();
-	const chanskiName = channelName;
+
 	const [instruments, setInstruments] = useState(
 		channels[channelIndex].instruments
 	);
