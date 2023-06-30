@@ -16,29 +16,51 @@ import * as Tone from "tone";
 import PianoRoll from "./PianoRoll.jsx";
 import Instrument from "./Instrument.jsx";
 import AddBoxIcon from "@mui/icons-material/AddBox";
-const Channel = ({ channelName, updatePlaylist }) => {
+import { useDispatch, useSelector } from "react-redux";
+import {
+	modifyInstrument,
+	addInstrument,
+	removeInstrument,
+} from "../state/dataSlice.js";
+import RemoveIcon from "@mui/icons-material/Remove";
+const Channel = ({ channelName, updatePlaylist, channelIndex }) => {
+	const channels = useSelector((state) => state.channels);
+	const dispatch = useDispatch();
 	const chanskiName = channelName;
-	const [instruments, setInstruments] = useState([
-		{ instrument: "PolySynth", pianoRollData: [] },
-	]);
+	const [instruments, setInstruments] = useState(
+		channels[channelIndex].instruments
+	);
 	const [selectedValue, setSelectedValue] = useState("");
 	const handleChange = (event) => {
 		setSelectedValue(event.target.value);
 	};
-	const handleSubmit = () => {
+	const handleAddInstrument = () => {
 		console.log(selectedValue);
 		if (selectedValue !== "") {
-			setInstruments((prev) => [...prev, { instrument: selectedValue }]);
-			console.log(instruments);
+			dispatch(
+				addInstrument({
+					channelIndex,
+					data: { instrument: selectedValue, noteData: [] },
+				})
+			);
+			setSelectedValue("");
+			setInstruments(() => channels[channelIndex].instruments);
 		}
+	};
 
-		setSelectedValue("");
+	const handleRemoveInstrument = (instrumentIndex) => {
+		console.log(instrumentIndex);
+		dispatch(removeInstrument({ channelIndex, instrumentIndex }));
+		setInstruments(() => channels[channelIndex].instruments);
 	};
 
 	const handleUpdateInstrumentRollData = (data) => {
 		console.log(data);
-		updatePlaylist({ channel: chanskiName, data });
+		updatePlaylist(index, data);
 	};
+	useEffect(() => {
+		setInstruments(channels[channelIndex]?.instruments ?? []);
+	}, [channels, channelIndex]);
 
 	return (
 		<Box
@@ -75,7 +97,7 @@ const Channel = ({ channelName, updatePlaylist }) => {
 						<MenuItem value="FMSynth">FMSynth </MenuItem>
 					</Select>
 					<Button
-						onClick={handleSubmit}
+						onClick={handleAddInstrument}
 						sx={{
 							background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
 							color: "white", // Change the color to your desired color
@@ -85,13 +107,30 @@ const Channel = ({ channelName, updatePlaylist }) => {
 					</Button>
 				</FormControl>
 			</Box>
-			{instruments.map((item, index) => {
+			{instruments.map((item, instIndex) => {
 				return (
-					<Instrument
-						type={item.instrument}
-						updateChannel={handleUpdateInstrumentRollData}
-						key={index}
-					/>
+					<Box
+						justifyContent="center"
+						alignItems="center"
+						display="flex"
+						flexDirection="column"
+					>
+						<Instrument
+							type={item.instrument}
+							updateChannel={handleUpdateInstrumentRollData}
+							key={instIndex}
+							instrumentIndex={instIndex}
+						/>
+						<Button
+							onClick={() => handleRemoveInstrument(instIndex)}
+							sx={{
+								background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
+								color: "pink", // Change the color to your desired color
+							}}
+						>
+							<RemoveIcon />
+						</Button>
+					</Box>
 				);
 			})}
 		</Box>

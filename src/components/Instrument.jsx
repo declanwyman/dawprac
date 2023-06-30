@@ -16,7 +16,11 @@ import { useState, useEffect } from "react";
 import * as Tone from "tone";
 import PianoRoll from "./PianoRoll.jsx";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
+import { useDispatch, useSelector } from "react-redux";
+import { modifyInstrument } from "../state/dataSlice.js";
 const Instrument = ({ type, updateChannel }) => {
+	const channels = useSelector((state) => state.channels);
+	const dispatch = useDispatch();
 	const instType = type;
 	Tone.Transport.bpm.value = 120; // Set the BPM to 120
 	const synth = new Tone.PolySynth().toDestination();
@@ -29,6 +33,7 @@ const Instrument = ({ type, updateChannel }) => {
 	const collectPatterns = (data) => {
 		console.log("data", data);
 		setPatterns(data);
+		dispatch(modifyInstrument({}));
 		updateChannel({ instrument: instType, data });
 	};
 
