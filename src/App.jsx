@@ -6,20 +6,14 @@ import "./App.css";
 import PianoRoll from "./components/PianoRoll.jsx";
 import Instrument from "./components/Instrument.jsx";
 import PlayList from "./components/PlayList.jsx";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 function App() {
 	return (
-		<Box
-			justifyContent="center"
-			alignItems="center"
-			display="flex"
-			flexDirection="row"
-			onContextMenu={(e) => (e.buttons !== 1 ? e.preventDefault() : null)}
-			sx={{
-				background: "linear-gradient(to right, #c8fedc, #4ADEDE)",
-			}}
-		>
-			<PlayList />
-		</Box>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<PlayList />} />
+			</Routes>
+		</BrowserRouter>
 	);
 }
 

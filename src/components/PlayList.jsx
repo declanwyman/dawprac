@@ -15,7 +15,7 @@ import {
 	InputLabel,
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as Tone from "tone";
 import Instrument from "./Instrument.jsx";
 import Channel from "./Channel.jsx";
@@ -31,6 +31,15 @@ const PlayList = () => {
 	const channels = useSelector((state) => state.channels);
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
+
+	const elementRef = useRef(null); // Create a ref to access the DOM element
+
+	useEffect(() => {
+		if (elementRef.current) {
+			const rect = elementRef.current.getBoundingClientRect();
+			console.log(rect);
+		}
+	}, [channels]);
 
 	const handleAddChannel = () => {
 		dispatch(
@@ -65,6 +74,7 @@ const PlayList = () => {
 			alignItems="center"
 			display="flex"
 			flexDirection="row"
+			ref={elementRef}
 		>
 			<Button onClick={handleOpen} width="100px">
 				Channels
